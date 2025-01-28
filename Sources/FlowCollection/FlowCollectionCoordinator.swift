@@ -4,7 +4,7 @@ import Foundation
 import UIKit
 import SwiftUI
 
-public final class CollectionCoordinator<ViewModel: CollectionItems, CellView: View>: NSObject, UICollectionViewDelegateFlowLayout {
+public final class FlowCollectionCoordinator<ViewModel: FlowCollectionItems, CellView: View>: NSObject, UICollectionViewDelegateFlowLayout {
     //MARK: - UICollectionViewDelegateFlowLayout
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return collectionView.bounds.size
@@ -40,7 +40,7 @@ public final class CollectionCoordinator<ViewModel: CollectionItems, CellView: V
 }
 
 //MARK: - Data Source
-extension CollectionCoordinator {
+extension FlowCollectionCoordinator {
     internal func diffableDataSource(wireCell: @escaping (ViewModel.Item) -> CellView, collectionView: UICollectionView) -> UICollectionViewDiffableDataSource<Int, ViewModel.Item.ID> {
         assert(self.diffableDataSource == nil)
         let cellRegistration = UICollectionView.CellRegistration<UICollectionViewCell, ViewModel.Item> {
@@ -62,7 +62,7 @@ extension CollectionCoordinator {
 }
 
 //MARK: - Index handling
-extension CollectionCoordinator {
+extension FlowCollectionCoordinator {
     private func updateIndexIfNeeded(_ scrollView: UIScrollView, contentOffset: CGPoint? = nil) {
         let index: Int
         switch layout.scrollDirection {
@@ -77,7 +77,7 @@ extension CollectionCoordinator {
 }
 
 //MARK: - Updates
-extension CollectionCoordinator {
+extension FlowCollectionCoordinator {
     internal func updateCollection(collectionView: UICollectionView, viewModel: ViewModel, transaction: Transaction) {
         guard viewModel.id == self.viewModel.id else {
             updateViewModel(collectionView: collectionView, viewModel: viewModel, transaction: transaction)

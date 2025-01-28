@@ -4,7 +4,7 @@ import Foundation
 import SwiftUI
 
 @Observable
-internal final class PreviewCollectionItems: CollectionItems {
+internal final class PreviewFlowCollectionItems: FlowCollectionItems {
     let playback: PreviewPlayback
     var items: [PreviewItem]
     var focusedIndex: Int {
@@ -36,9 +36,9 @@ internal final class PreviewCollectionItems: CollectionItems {
 @MainActor
 @Observable
 internal final class PreviewItem: Identifiable {
-    var collection: PreviewCollectionItems {
+    var collection: PreviewFlowCollectionItems {
         guard let innerCollection = innerCollection else {
-            let collection = PreviewCollectionItems(pages: 3, index: 1, playback: playback)
+            let collection = PreviewFlowCollectionItems(pages: 3, index: 1, playback: playback)
             innerCollection = collection
             return collection
         }
@@ -55,7 +55,7 @@ internal final class PreviewItem: Identifiable {
     }
     
     private let playback: PreviewPlayback
-    private var innerCollection: PreviewCollectionItems?
+    private var innerCollection: PreviewFlowCollectionItems?
 }
 
 @Observable

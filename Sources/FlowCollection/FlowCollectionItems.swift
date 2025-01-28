@@ -3,7 +3,7 @@
 import Foundation
 
 @MainActor
-public protocol CollectionItems: AnyObject, Observable, Identifiable {
+public protocol FlowCollectionItems: AnyObject, Observable, Identifiable {
     associatedtype Item: Identifiable
 
     var items: [Item] { get }

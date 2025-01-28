@@ -5,7 +5,7 @@ import SwiftUI
 import UIKit
 
 @MainActor 
-public struct FlowCollection<ViewModel: CollectionItems, CellView: View>: UIViewRepresentable {
+public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UIViewRepresentable {
     
     /// Collection is backed by a UICollectionView with a UICollectionViewFlowLayout layout.
     ///
@@ -45,8 +45,8 @@ public struct FlowCollection<ViewModel: CollectionItems, CellView: View>: UIView
                                              transaction: context.transaction)
     }
     
-    public func makeCoordinator() -> CollectionCoordinator<ViewModel, CellView> {
-        return CollectionCoordinator<ViewModel, CellView>(viewModel: viewModel, layout: UICollectionViewFlowLayout())
+    public func makeCoordinator() -> FlowCollectionCoordinator<ViewModel, CellView> {
+        return FlowCollectionCoordinator<ViewModel, CellView>(viewModel: viewModel, layout: UICollectionViewFlowLayout())
     }
     
     //MARK: - Internal
@@ -63,10 +63,5 @@ public extension FlowCollection {
     func scrollDirection(_ direction: UICollectionView.ScrollDirection) -> Self {
         modify { $0.scrollDirection = direction }
     }
-}
-
-//MARK: - Preview
-#Preview {
-    PreviewCollection(collection: PreviewCollectionItems(pages: 6, index: 3, playback: PreviewPlayback()))
 }
 
