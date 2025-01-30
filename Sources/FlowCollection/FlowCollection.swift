@@ -26,9 +26,9 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: context.coordinator.layout)
         collectionView.delegate = context.coordinator
         collectionView.dataSource = context.coordinator.diffableDataSource(wireCell: wireCell, collectionView: collectionView)
-        collectionView.isPagingEnabled = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
+        configure(collectionView: collectionView, context: context)
         // Initial offset is a bit off
         Task {
             collectionView.scrollToItem(at: IndexPath(row: viewModel.focusedIndex, section: 0),
@@ -39,7 +39,7 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
     }
     
     public func updateUIView(_ uiView: UICollectionView, context: Context) {
-        context.coordinator.layout.scrollDirection = scrollDirection
+        configure(collectionView: uiView, context: context)
         context.coordinator.updateCollection(collectionView: uiView,
                                              viewModel: viewModel,
                                              transaction: context.transaction)
@@ -57,11 +57,11 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
     @Binding var focusedIndex: Int
     
     var scrollDirection: UICollectionView.ScrollDirection = .vertical
-}
-
-public extension FlowCollection {
-    func scrollDirection(_ direction: UICollectionView.ScrollDirection) -> Self {
-        modify { $0.scrollDirection = direction }
+    var paging = false
+    
+    //MARK: - Private
+    private func configure(collectionView: UICollectionView, context: Context) {
+        collectionView.isPagingEnabled = paging
+        context.coordinator.layout.scrollDirection = scrollDirection
     }
 }
-

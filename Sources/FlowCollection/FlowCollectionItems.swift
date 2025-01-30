@@ -7,5 +7,6 @@ public protocol FlowCollectionItems: AnyObject, Observable, Identifiable {
     associatedtype Item: Identifiable
 
     var items: [Item] { get }
+    
     var focusedIndex: Int { get set }
 }

@@ -2,6 +2,7 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
 @MainActor
 internal struct PreviewFlowCollection: View {
@@ -16,6 +17,7 @@ internal struct PreviewFlowCollection: View {
                                     viewModel: $0,
                                     playback: collection.playback)
                     }
+                    .isPaging(true)
                 }
             }
             .tabItem {
@@ -29,9 +31,17 @@ internal struct PreviewFlowCollection: View {
                                         viewModel: $0,
                                         playback: collection.playback)
                         }
-                        .scrollDirection(.horizontal)
+                        .isPaging(true)
+                        .scrollHorizontally(false)
                     }
-                    
+                    NavigationLink("No paging") {
+                        FlowCollection(collection) {
+                            PreviewPage(collection: collection,
+                                        viewModel: $0,
+                                        playback: collection.playback)
+                        }
+                        .isPaging(false)
+                    }
                 }
             }
             .tabItem {
