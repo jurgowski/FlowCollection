@@ -120,6 +120,7 @@ extension FlowCollectionCoordinator {
         if viewModel.focusedIndex >= viewModel.items.count {
             viewModel.focusedIndex = viewModel.items.count - 1
         }
+
         self.lastFocusedIndex = viewModel.focusedIndex
         collectionView.scrollToItem(at: IndexPath(row: viewModel.focusedIndex, section: 0),
                                     at: .top,
