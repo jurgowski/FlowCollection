@@ -5,18 +5,18 @@ import UIKit
 import SwiftUI
 
 public final class FlowCollectionCoordinator<ViewModel: FlowCollectionItems, CellView: View>: NSObject, UICollectionViewDelegateFlowLayout {
+    var viewModel: ViewModel
+
     internal init(viewModel: ViewModel, layout: UICollectionViewFlowLayout) {
         self.viewModel = viewModel
         self.layout = layout
     }
 
     let layout: UICollectionViewFlowLayout
-    var diffableDataSource: UICollectionViewDiffableDataSource<Int, ViewModel.Item.ID>!
-    
-    var viewModel: ViewModel
-
-    var lastPages: [ViewModel.Item]?
     var lastFocusedIndex: Int?
+    
+    var diffableDataSource: UICollectionViewDiffableDataSource<Int, ViewModel.Item.ID>!
+    var lastIds: [ViewModel.Item.ID]?
 
     //MARK: - UICollectionViewDelegateFlowLayout
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
@@ -81,7 +81,7 @@ extension FlowCollectionCoordinator {
             updateViewModel(collectionView: collectionView, viewModel: viewModel, transaction: transaction)
             return
         }
-        guard let lastPages, lastPages.map({ $0.id }) == viewModel.items.map({ $0.id }) else {
+        guard let lastIds, lastIds == viewModel.items.map({ $0.id }) else {
             updateItems(collectionView: collectionView, viewModel: viewModel, transaction: transaction)
             return
         }
@@ -104,10 +104,11 @@ extension FlowCollectionCoordinator {
     }
     
     private func updateItems(collectionView: UICollectionView, viewModel: ViewModel, transaction: Transaction) {
-        self.lastPages = viewModel.items
+        let lastIds = viewModel.items.map({ $0.id })
         var snapshot = NSDiffableDataSourceSnapshot<Int, ViewModel.Item.ID>()
         snapshot.appendSections([0])
-        snapshot.appendItems(viewModel.items.map { $0.id })
+        snapshot.appendItems(lastIds)
+        self.lastIds = lastIds
         diffableDataSource.apply(snapshot)
     }
     
