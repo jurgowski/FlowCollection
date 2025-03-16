@@ -10,4 +10,10 @@ public extension FlowCollection {
     func isPaging(_ paging: Bool) -> Self {
         modify { $0.paging = paging }
     }
+    
+    private func modify(_ update: (inout Self) -> Void) -> Self {
+        var copy = self
+        update(&copy)
+        return copy
+    }
 }

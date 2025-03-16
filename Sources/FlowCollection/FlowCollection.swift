@@ -5,7 +5,7 @@ import SwiftUI
 import UIKit
 
 @MainActor 
-public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UIViewRepresentable {
+public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: View {
     
     /// Collection is backed by a UICollectionView with a UICollectionViewFlowLayout layout.
     ///
@@ -18,7 +18,16 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
         // Observe index changes
         self._focusedIndex = Binding { viewModel.focusedIndex } set: { viewModel.focusedIndex = $0 }
     }
+
+    private let viewModel: ViewModel
+    @ViewBuilder private let wireCell: (ViewModel.Item) -> CellView
+    @Binding private var focusedIndex: Int
     
+    var scrollDirection: UICollectionView.ScrollDirection = .vertical
+    var paging = false
+}
+
+extension FlowCollection: UIViewRepresentable {
     public func makeUIView(context: Context) -> UICollectionView {
         context.coordinator.layout.scrollDirection = scrollDirection
         context.coordinator.layout.minimumLineSpacing = 0
@@ -28,18 +37,12 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
         collectionView.dataSource = context.coordinator.diffableDataSource(wireCell: wireCell, collectionView: collectionView)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
-        configure(collectionView: collectionView, context: context)
-        // Initial offset is a bit off
-        Task {
-            collectionView.scrollToItem(at: IndexPath(row: viewModel.focusedIndex, section: 0),
-                                        at: .top,
-                                        animated: false)
-        }
         return collectionView
     }
     
     public func updateUIView(_ uiView: UICollectionView, context: Context) {
-        configure(collectionView: uiView, context: context)
+        uiView.isPagingEnabled = paging
+        context.coordinator.layout.scrollDirection = scrollDirection
         context.coordinator.updateCollection(collectionView: uiView,
                                              viewModel: viewModel,
                                              transaction: context.transaction)
@@ -47,21 +50,5 @@ public struct FlowCollection<ViewModel: FlowCollectionItems, CellView: View>: UI
     
     public func makeCoordinator() -> FlowCollectionCoordinator<ViewModel, CellView> {
         return FlowCollectionCoordinator<ViewModel, CellView>(viewModel: viewModel, layout: UICollectionViewFlowLayout())
-    }
-    
-    //MARK: - Internal
-    let viewModel: ViewModel
-    
-    @ViewBuilder let wireCell: (ViewModel.Item) -> CellView
-    
-    @Binding var focusedIndex: Int
-    
-    var scrollDirection: UICollectionView.ScrollDirection = .vertical
-    var paging = false
-    
-    //MARK: - Private
-    private func configure(collectionView: UICollectionView, context: Context) {
-        collectionView.isPagingEnabled = paging
-        context.coordinator.layout.scrollDirection = scrollDirection
     }
 }

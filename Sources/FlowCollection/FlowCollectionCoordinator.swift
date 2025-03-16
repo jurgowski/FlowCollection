@@ -5,6 +5,19 @@ import UIKit
 import SwiftUI
 
 public final class FlowCollectionCoordinator<ViewModel: FlowCollectionItems, CellView: View>: NSObject, UICollectionViewDelegateFlowLayout {
+    internal init(viewModel: ViewModel, layout: UICollectionViewFlowLayout) {
+        self.viewModel = viewModel
+        self.layout = layout
+    }
+
+    let layout: UICollectionViewFlowLayout
+    var diffableDataSource: UICollectionViewDiffableDataSource<Int, ViewModel.Item.ID>!
+    
+    var viewModel: ViewModel
+
+    var lastPages: [ViewModel.Item]?
+    var lastFocusedIndex: Int?
+
     //MARK: - UICollectionViewDelegateFlowLayout
     public func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return collectionView.bounds.size
@@ -22,21 +35,6 @@ public final class FlowCollectionCoordinator<ViewModel: FlowCollectionItems, Cel
         }
         updateIndexIfNeeded(scrollView, contentOffset: targetContentOffset.pointee)
     }
-
-    //MARK: - Internal
-    internal init(viewModel: ViewModel, layout: UICollectionViewFlowLayout) {
-        self.viewModel = viewModel
-        self.layout = layout
-    }
-    
-    let layout: UICollectionViewFlowLayout
-    
-    var viewModel: ViewModel
-
-    var lastPages: [ViewModel.Item]?
-    var lastFocusedIndex: Int?
-    
-    var diffableDataSource: UICollectionViewDiffableDataSource<Int, ViewModel.Item.ID>!
 }
 
 //MARK: - Data Source
@@ -122,8 +120,15 @@ extension FlowCollectionCoordinator {
         }
 
         self.lastFocusedIndex = viewModel.focusedIndex
-        collectionView.scrollToItem(at: IndexPath(row: viewModel.focusedIndex, section: 0),
-                                    at: .top,
-                                    animated: transaction.animation != nil)
+        let indexPath = IndexPath(row: viewModel.focusedIndex, section: 0)
+        let animated = transaction.animation != nil
+        if collectionView.contentSize == .zero {
+            // If the content size isn't set yet, this won't work synchronously.
+            // Let's just dispatch since it should be set by then.
+            Task { collectionView.scrollToItem(at: indexPath, at: .top, animated: animated) }
+        } else {
+            collectionView.scrollToItem(at: indexPath, at: .top, animated: animated)
+        }
     }
 }
+
