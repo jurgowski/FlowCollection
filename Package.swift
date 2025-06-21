@@ -9,12 +9,9 @@ let package = Package(
         .iOS(.v17)
     ],
     products: [
-        .library(
-            name: "FlowCollection",
-            targets: ["FlowCollection"]),
+        .library(name: "FlowCollection", targets: ["FlowCollection"]),
     ],
     targets: [
-        .target(
-            name: "FlowCollection"),
+        .target(name: "FlowCollection"),
     ]
 )
