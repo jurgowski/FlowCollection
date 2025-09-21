@@ -37,6 +37,7 @@ extension FlowCollection: UIViewRepresentable {
         collectionView.dataSource = context.coordinator.diffableDataSource(wireCell: wireCell, collectionView: collectionView)
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
+        collectionView.contentInsetAdjustmentBehavior = .never
         return collectionView
     }
     
